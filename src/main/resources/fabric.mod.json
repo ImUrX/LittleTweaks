@@ -1,29 +1,30 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "audioswitcher",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "AudioSwitcher",
+  "description": "Let's you switch audio device + detects change of default one",
   "authors": [
-    "Me!"
+    "ImUrX"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/ImUrX/AudioSwitcher-fabric",
+    "sources": "https://github.com/ImUrX/AudioSwitcher-fabric",
+    "issues": "https://github.com/ImUrX/AudioSwitcher-fabric/issues"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/audioswitcher/icon.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "io.github.imurx.audioswitcher.AudioSwitcher"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "audioswitcher.mixins.json"
   ],
 
   "depends": {
@@ -31,8 +32,5 @@
     "fabric": "*",
     "minecraft": "1.17.x",
     "java": ">=16"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }
