@@ -41,12 +41,14 @@ public class SoundEngineMixin {
             cancellable = true
     )
     private static void openDevice(CallbackInfoReturnable<Long> cir) {
-        long l = ALC10.alcOpenDevice(AudioSwitcher.currentDevice);
-        if (l != 0L && !AlUtilAccessor.callCheckAlcErrors(l, "Open device")) {
-            cir.setReturnValue(l);
-            return;
-        }
+        if(!AudioSwitcher.useDefault) {
+            long l = ALC10.alcOpenDevice(AudioSwitcher.currentDevice);
+            if (l != 0L && !AlUtilAccessor.callCheckAlcErrors(l, "Open device")) {
+                cir.setReturnValue(l);
+                return;
+            }
 
-        throw new IllegalStateException("Failed to open OpenAL device");
+            throw new IllegalStateException("Failed to open OpenAL device");
+        }
     }
 }

@@ -20,7 +20,7 @@ public class AudioSwitcher implements ClientModInitializer {
 	static public String defaultDevice = "";
 	static public String currentDevice = "";
 	static public AudioSwitcher switcher;
-	static boolean useDefault = true;
+	static public boolean useDefault = true;
 
 	@Override
 	public void onInitializeClient() {
@@ -40,7 +40,6 @@ public class AudioSwitcher implements ClientModInitializer {
 	static public void updateDevices() {
 		devices = ALUtil.getStringList(0, ALC11.ALC_ALL_DEVICES_SPECIFIER);
 		defaultDevice = ALC11.alcGetString(0, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
-		currentDevice = defaultDevice;
 	}
 
 	static public class DisconnectCheckTask extends TimerTask {
@@ -49,20 +48,10 @@ public class AudioSwitcher implements ClientModInitializer {
 			SoundSystem soundSystem = ((SoundManagerAccessor) MinecraftClient.getInstance().getSoundManager()).getSoundSystem();
 			SoundEngine engine = ((SoundSystemAccessor) soundSystem).getSoundEngine();
 			SoundEngineAccessor accessor = (SoundEngineAccessor) engine;
-			if(useDefault) {
-
-				String latestDefaultDevice = ALC11.alcGetString(0, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
-				System.out.println(latestDefaultDevice + " vs " + defaultDevice);
-				if(!latestDefaultDevice.equals(defaultDevice)) {
-					defaultDevice = latestDefaultDevice;
-					currentDevice = defaultDevice;
-					soundSystem.reloadSounds();
-					return;
-				}
-			}
 			int connect = ALC11.alcGetInteger(accessor.getDevicePointer(), EXTDisconnect.ALC_CONNECTED);
 			if(connect == ALC11.ALC_FALSE) {
 				updateDevices();
+				currentDevice = defaultDevice;
 				soundSystem.reloadSounds();
 			}
 		}

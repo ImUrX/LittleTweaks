@@ -1,5 +1,8 @@
 package io.github.imurx.audioswitcher.mixin;
 
+import io.github.imurx.audioswitcher.AudioSwitcher;
+import io.github.imurx.audioswitcher.RightClickableWidget;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
@@ -8,6 +11,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(SoundOptionsScreen.class)
 public class SoundOptionsScreenMixin extends GameOptionsScreen {
-	boolean hey = true;
+	int selectedIndex = 0;
 	public SoundOptionsScreenMixin(Screen parent, GameOptions gameOptions, Text title) {
 		super(parent, gameOptions, title);
 	}
@@ -30,19 +34,41 @@ public class SoundOptionsScreenMixin extends GameOptionsScreen {
 		)
 	)
 	private Element addSubtitleWidget(SoundOptionsScreen soundOptionsScreen, Element widget) {
-		if(!(widget instanceof ClickableWidget)) {
+		if(!(widget instanceof ClickableWidget subtitleWidget)) {
 			throw new IllegalStateException("The subtitle button isn't a ClickableWidget!");
 		}
-		ClickableWidget subtitleWidget = (ClickableWidget) widget;
-		subtitleWidget.x = this.width / 2 - 155;
+		AudioSwitcher.updateDevices();
+		subtitleWidget.x = this.width / 2 + 5;
+		subtitleWidget.y -= 24;
 		this.addDrawableChild(subtitleWidget);
-		ButtonWidget sourcesWidget = new ButtonWidget(subtitleWidget.x + 160, subtitleWidget.y, subtitleWidget.getWidth(), subtitleWidget.getHeight(), Text.of("true"), (button)  -> {
-			System.out.println("pressed the button");
-			this.hey = !this.hey;
-			button.setMessage(this.hey ? Text.of("true") : Text.of("false"));
-
-		});
+		String option = AudioSwitcher.useDefault ? "Device: Default" : "Device: " + AudioSwitcher.currentDevice.replaceAll("OpenAL Soft on ", "");
+		ButtonWidget sourcesWidget = new RightClickableWidget(subtitleWidget.x - 160, subtitleWidget.y + 24, subtitleWidget.getWidth() * 2 + 10, subtitleWidget.getHeight(), Text.of(option), (button) -> {
+			if(++selectedIndex > AudioSwitcher.devices.size()) {
+				selectedIndex = 0;
+			}
+			updateDevice(button);
+		}, (button -> {
+			if(--selectedIndex < 0) {
+				selectedIndex = AudioSwitcher.devices.size();
+			}
+			updateDevice(button);
+		}));
 		this.addDrawableChild(sourcesWidget);
 		return widget;
+	}
+
+	private void updateDevice(ClickableWidget button) {
+		SoundSystem soundSystem = ((SoundManagerAccessor) MinecraftClient.getInstance().getSoundManager()).getSoundSystem();
+		if(selectedIndex == 0) {
+			AudioSwitcher.useDefault = true;
+			button.setMessage(Text.of("Device: Default"));
+			soundSystem.reloadSounds();
+			return;
+		} else if(AudioSwitcher.useDefault) {
+			AudioSwitcher.useDefault = false;
+		}
+		AudioSwitcher.currentDevice = AudioSwitcher.devices.get(selectedIndex - 1);
+		button.setMessage(Text.of("Device: " + AudioSwitcher.currentDevice.replaceAll("OpenAL Soft on ", "")));
+		soundSystem.reloadSounds();
 	}
 }
