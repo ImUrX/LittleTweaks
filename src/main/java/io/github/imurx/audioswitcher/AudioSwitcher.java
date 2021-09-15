@@ -1,17 +1,54 @@
 package io.github.imurx.audioswitcher;
 
-import net.fabricmc.api.ModInitializer;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.ALC;
-import org.lwjgl.openal.ALC11;
-import org.lwjgl.openal.EnumerateAllExt;
+import io.github.imurx.audioswitcher.mixin.SoundEngineAccessor;
+import io.github.imurx.audioswitcher.mixin.SoundManagerAccessor;
+import io.github.imurx.audioswitcher.mixin.SoundSystemAccessor;
+import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.SoundEngine;
+import org.lwjgl.openal.*;
 
-public class AudioSwitcher implements ModInitializer {
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class AudioSwitcher implements ClientModInitializer {
+	private Timer timer;
+	static public List<String> devices;
+	static public String defaultDevice = "";
+	static public String currentDevice = "";
+	static public AudioSwitcher switcher;
+
 	@Override
-	public void onInitialize() {
-		if(!ALC11.alcIsExtensionPresent(0, "ALC_ENUMERATE_ALL_EXT")) {
-			throw new IllegalStateException("Computer doesn't has the Enumerate All extension");
+	public void onInitializeClient() {
+		updateDevices();
+		switcher = this; //not good
+	}
+
+	public void onInitialized() {
+		timer = new Timer("AudioSwitcherChecker");
+		timer.scheduleAtFixedRate(new DisconnectCheckTask(), 0, 2000);
+	}
+
+	public void onStopSystem() {
+		if(timer != null) timer.cancel();
+	}
+
+	public void updateDevices() {
+		this.devices = ALUtil.getStringList(0, EnumerateAllExt.ALC_ALL_DEVICES_SPECIFIER);
+		this.defaultDevice = ALC11.alcGetString(0, EnumerateAllExt.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
+		this.currentDevice = this.defaultDevice;
+	}
+
+	public class DisconnectCheckTask extends TimerTask {
+		@Override
+		public void run() {
+			SoundEngine engine = ((SoundSystemAccessor) ((SoundManagerAccessor) MinecraftClient.getInstance().getSoundManager()).getSoundSystem()).getSoundEngine();
+			SoundEngineAccessor accessor = (SoundEngineAccessor) engine;
+			int connect = ALC11.alcGetInteger(accessor.getDevicePointer(), EXTDisconnect.ALC_CONNECTED);
+			if(connect == ALC11.ALC_FALSE) {
+				System.out.println("Current device got disconnected");
+			}
 		}
-		System.out.println(ALC11.alcGetString(0, EnumerateAllExt.ALC_ALL_DEVICES_SPECIFIER).replaceAll("\0", ","));
 	}
 }

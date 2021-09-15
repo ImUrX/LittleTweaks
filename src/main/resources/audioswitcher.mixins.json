@@ -5,7 +5,13 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [],
   "client": [
-    "SoundOptionsScreenMixin"
+    "AlUtilAccessor",
+    "SoundEngineAccessor",
+    "SoundEngineMixin",
+    "SoundManagerAccessor",
+    "SoundOptionsScreenMixin",
+    "SoundSystemAccessor",
+    "SoundSystemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
