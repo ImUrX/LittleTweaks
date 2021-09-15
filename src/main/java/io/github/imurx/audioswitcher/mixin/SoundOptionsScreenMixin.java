@@ -14,13 +14,16 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 
 @Mixin(SoundOptionsScreen.class)
 public class SoundOptionsScreenMixin extends GameOptionsScreen {
-	int selectedIndex = 0;
+	@Unique
+	public int selectedIndex = 0;
+
 	public SoundOptionsScreenMixin(Screen parent, GameOptions gameOptions, Text title) {
 		super(parent, gameOptions, title);
 	}
@@ -38,10 +41,15 @@ public class SoundOptionsScreenMixin extends GameOptionsScreen {
 			throw new IllegalStateException("The subtitle button isn't a ClickableWidget!");
 		}
 		AudioSwitcher.updateDevices();
+		if(!AudioSwitcher.useDefault) {
+			selectedIndex = AudioSwitcher.devices.indexOf(AudioSwitcher.currentDevice) + 1;
+		} else {
+			selectedIndex = 0;
+		}
 		subtitleWidget.x = this.width / 2 + 5;
 		subtitleWidget.y -= 24;
 		this.addDrawableChild(subtitleWidget);
-		String option = AudioSwitcher.useDefault ? "Device: Default" : "Device: " + AudioSwitcher.currentDevice.replaceAll("OpenAL Soft on ", "");
+		String option = AudioSwitcher.useDefault ? "Device: System Default" : "Device: " + AudioSwitcher.currentDevice.replaceAll("OpenAL Soft on ", "");
 		ButtonWidget sourcesWidget = new RightClickableWidget(subtitleWidget.x - 160, subtitleWidget.y + 24, subtitleWidget.getWidth() * 2 + 10, subtitleWidget.getHeight(), Text.of(option), (button) -> {
 			if(++selectedIndex > AudioSwitcher.devices.size()) {
 				selectedIndex = 0;
@@ -57,18 +65,20 @@ public class SoundOptionsScreenMixin extends GameOptionsScreen {
 		return widget;
 	}
 
+	@Unique
 	private void updateDevice(ClickableWidget button) {
 		SoundSystem soundSystem = ((SoundManagerAccessor) MinecraftClient.getInstance().getSoundManager()).getSoundSystem();
 		if(selectedIndex == 0) {
 			AudioSwitcher.useDefault = true;
-			button.setMessage(Text.of("Device: Default"));
+			button.setMessage(Text.of("Device: System Default"));
 			soundSystem.reloadSounds();
 			return;
 		} else if(AudioSwitcher.useDefault) {
 			AudioSwitcher.useDefault = false;
 		}
 		AudioSwitcher.currentDevice = AudioSwitcher.devices.get(selectedIndex - 1);
+		AudioSwitcher.preferredDevice = AudioSwitcher.currentDevice;
 		button.setMessage(Text.of("Device: " + AudioSwitcher.currentDevice.replaceAll("OpenAL Soft on ", "")));
-		soundSystem.reloadSounds();
+		AudioSwitcher.restartSoundSystem(AudioSwitcher.currentDevice);
 	}
 }

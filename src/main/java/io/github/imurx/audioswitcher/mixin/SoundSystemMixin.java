@@ -1,6 +1,6 @@
 package io.github.imurx.audioswitcher.mixin;
 
-import io.github.imurx.audioswitcher.AudioSwitcher;
+import io.github.imurx.audioswitcher.events.SoundSystemCallback;
 import net.minecraft.client.sound.SoundSystem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,15 +13,15 @@ public class SoundSystemMixin {
             method = "start",
             at = @At("TAIL")
     )
-    void onStarted(CallbackInfo ci) {
-        AudioSwitcher.switcher.onInitialized();
+    private void onStarted(CallbackInfo ci) {
+        SoundSystemCallback.STARTED_SYSTEM.invoker().onStateChange((SoundSystem) (Object) this);
     }
 
     @Inject(
             method = "stop()V",
             at = @At("HEAD")
     )
-    void onStopped(CallbackInfo ci) {
-        AudioSwitcher.switcher.onStopSystem();
+    private void onStopped(CallbackInfo ci) {
+        SoundSystemCallback.STOPPING_SYSTEM.invoker().onStateChange((SoundSystem) (Object) this);
     }
 }
