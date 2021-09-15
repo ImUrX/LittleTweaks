@@ -1,5 +1,6 @@
 package io.github.imurx.audioswitcher.mixin;
 
+import io.github.imurx.audioswitcher.AudioSwitcher;
 import net.minecraft.client.sound.AlUtil;
 import net.minecraft.client.sound.SoundEngine;
 import org.lwjgl.openal.ALC10;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.nio.ByteBuffer;
@@ -33,16 +35,16 @@ public class SoundEngineMixin {
         }
     }
 
-    @Redirect(
+    @Inject(
             method = "openDevice",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            cancellable = true
     )
-    static long openDevice() {
-        for(int i = 0; i < 3; ++i) {
-            long l = ALC10.alcOpenDevice((ByteBuffer)null);
-            if (l != 0L && !AlUtilAccessor.callCheckAlcErrors(l, "Open device")) {
-                return l;
-            }
+    private static void openDevice(CallbackInfoReturnable<Long> cir) {
+        long l = ALC10.alcOpenDevice(AudioSwitcher.currentDevice);
+        if (l != 0L && !AlUtilAccessor.callCheckAlcErrors(l, "Open device")) {
+            cir.setReturnValue(l);
+            return;
         }
 
         throw new IllegalStateException("Failed to open OpenAL device");
