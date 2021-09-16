@@ -1,7 +1,8 @@
-package io.github.imurx.audioswitcher.mixin;
+package io.github.imurx.littletweaks.mixin;
 
-import io.github.imurx.audioswitcher.AudioSwitcher;
-import io.github.imurx.audioswitcher.RightClickableWidget;
+import io.github.imurx.littletweaks.LittleConfig;
+import io.github.imurx.littletweaks.LittleTweaks;
+import io.github.imurx.littletweaks.RightClickableWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -40,24 +41,24 @@ public class SoundOptionsScreenMixin extends GameOptionsScreen {
 		if(!(widget instanceof ClickableWidget subtitleWidget)) {
 			throw new IllegalStateException("The subtitle button isn't a ClickableWidget!");
 		}
-		AudioSwitcher.updateDevices();
-		if(!AudioSwitcher.useDefault) {
-			selectedIndex = AudioSwitcher.devices.indexOf(AudioSwitcher.currentDevice) + 1;
+		LittleTweaks.updateDevices();
+		if(!LittleTweaks.getConfig().useDefaultDevice) {
+			selectedIndex = LittleTweaks.devices.indexOf(LittleTweaks.currentDevice) + 1;
 		} else {
 			selectedIndex = 0;
 		}
 		subtitleWidget.x = this.width / 2 + 5;
 		subtitleWidget.y -= 24;
 		this.addDrawableChild(subtitleWidget);
-		String option = AudioSwitcher.useDefault ? "Device: System Default" : "Device: " + AudioSwitcher.currentDevice.replaceAll("OpenAL Soft on ", "");
+		String option = LittleTweaks.getConfig().useDefaultDevice ? "Device: System Default" : "Device: " + LittleTweaks.currentDevice.replaceAll("OpenAL Soft on ", "");
 		ButtonWidget sourcesWidget = new RightClickableWidget(subtitleWidget.x - 160, subtitleWidget.y + 24, subtitleWidget.getWidth() * 2 + 10, subtitleWidget.getHeight(), Text.of(option), (button) -> {
-			if(++selectedIndex > AudioSwitcher.devices.size()) {
+			if(++selectedIndex > LittleTweaks.devices.size()) {
 				selectedIndex = 0;
 			}
 			updateDevice(button);
 		}, (button -> {
 			if(--selectedIndex < 0) {
-				selectedIndex = AudioSwitcher.devices.size();
+				selectedIndex = LittleTweaks.devices.size();
 			}
 			updateDevice(button);
 		}));
@@ -69,16 +70,18 @@ public class SoundOptionsScreenMixin extends GameOptionsScreen {
 	private void updateDevice(ClickableWidget button) {
 		SoundSystem soundSystem = ((SoundManagerAccessor) MinecraftClient.getInstance().getSoundManager()).getSoundSystem();
 		if(selectedIndex == 0) {
-			AudioSwitcher.useDefault = true;
+			LittleTweaks.getConfig().useDefaultDevice = true;
 			button.setMessage(Text.of("Device: System Default"));
 			soundSystem.reloadSounds();
+			LittleTweaks.saveConfig();
 			return;
-		} else if(AudioSwitcher.useDefault) {
-			AudioSwitcher.useDefault = false;
+		} else if(LittleTweaks.getConfig().useDefaultDevice) {
+			LittleTweaks.getConfig().useDefaultDevice = false;
 		}
-		AudioSwitcher.currentDevice = AudioSwitcher.devices.get(selectedIndex - 1);
-		AudioSwitcher.preferredDevice = AudioSwitcher.currentDevice;
-		button.setMessage(Text.of("Device: " + AudioSwitcher.currentDevice.replaceAll("OpenAL Soft on ", "")));
-		AudioSwitcher.restartSoundSystem(AudioSwitcher.currentDevice);
+		LittleTweaks.currentDevice = LittleTweaks.devices.get(selectedIndex - 1);
+		LittleTweaks.getConfig().preferredDevice = LittleTweaks.currentDevice;
+		button.setMessage(Text.of("Device: " + LittleTweaks.currentDevice.replaceAll("OpenAL Soft on ", "")));
+		LittleTweaks.restartSoundSystem(LittleTweaks.currentDevice);
+		LittleTweaks.saveConfig();
 	}
 }

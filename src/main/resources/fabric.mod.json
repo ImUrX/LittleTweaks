@@ -1,30 +1,30 @@
 {
   "schemaVersion": 1,
-  "id": "audioswitcher",
+  "id": "littletweaks",
   "version": "${version}",
 
-  "name": "AudioSwitcher",
-  "description": "Let's you switch audio device + detects change of default one",
+  "name": "LittleTweaks",
+  "description": "Small client tweaks",
   "authors": [
     "ImUrX"
   ],
   "contact": {
-    "homepage": "https://github.com/ImUrX/AudioSwitcher-fabric",
-    "sources": "https://github.com/ImUrX/AudioSwitcher-fabric",
-    "issues": "https://github.com/ImUrX/AudioSwitcher-fabric/issues"
+    "homepage": "https://github.com/ImUrX/littletweaks",
+    "sources": "https://github.com/ImUrX/littletweaks",
+    "issues": "https://github.com/ImUrX/littletweaks"
   },
 
   "license": "MIT",
-  "icon": "assets/audioswitcher/icon.png",
+  "icon": "assets/littletweaks/icon.png",
 
   "environment": "client",
   "entrypoints": {
     "client": [
-      "io.github.imurx.audioswitcher.AudioSwitcher"
+      "io.github.imurx.littletweaks.LittleTweaks"
     ]
   },
   "mixins": [
-    "audioswitcher.mixins.json"
+    "littletweaks.mixins.json"
   ],
 
   "depends": {

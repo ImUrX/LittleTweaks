@@ -1,4 +1,4 @@
-package io.github.imurx.audioswitcher.events;
+package io.github.imurx.littletweaks.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

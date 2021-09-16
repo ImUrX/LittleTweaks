@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.imurx.audioswitcher.mixin",
+  "package": "io.github.imurx.littletweaks.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [],
   "client": [

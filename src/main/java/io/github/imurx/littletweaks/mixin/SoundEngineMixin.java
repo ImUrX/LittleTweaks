@@ -1,20 +1,16 @@
-package io.github.imurx.audioswitcher.mixin;
+package io.github.imurx.littletweaks.mixin;
 
-import io.github.imurx.audioswitcher.AudioSwitcher;
-import net.minecraft.client.sound.AlUtil;
+import io.github.imurx.littletweaks.LittleTweaks;
 import net.minecraft.client.sound.SoundEngine;
 import org.lwjgl.openal.ALC10;
-import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.ALCCapabilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.nio.ByteBuffer;
 
 @Mixin(SoundEngine.class)
 public class SoundEngineMixin {
@@ -41,8 +37,8 @@ public class SoundEngineMixin {
             cancellable = true
     )
     private static void openDevice(CallbackInfoReturnable<Long> cir) {
-        if(!AudioSwitcher.useDefault) {
-            long l = ALC10.alcOpenDevice(AudioSwitcher.currentDevice);
+        if(!LittleTweaks.getConfig().useDefaultDevice) {
+            long l = ALC10.alcOpenDevice(LittleTweaks.currentDevice);
             if (l != 0L && !AlUtilAccessor.callCheckAlcErrors(l, "Open device")) {
                 cir.setReturnValue(l);
                 return;

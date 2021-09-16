@@ -1,4 +1,4 @@
-package io.github.imurx.audioswitcher;
+package io.github.imurx.littletweaks;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;

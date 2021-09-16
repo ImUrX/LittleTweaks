@@ -1,4 +1,4 @@
-package io.github.imurx.audioswitcher.mixin;
+package io.github.imurx.littletweaks.mixin;
 
 import net.minecraft.client.sound.AlUtil;
 import org.spongepowered.asm.mixin.Mixin;
