@@ -1,9 +1,9 @@
-# Fabric Example Mod
+# LittleTweaks
 
-## Setup
+A Fabric mod for Minecraft: Java Edition that adds the following:
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+* Adds an audio device setting like in the new snapshot (21w37a)
+  * Handles audio device disconnects
+  * Remembers your audio device preference
 
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+Download from [Curseforge](https://www.curseforge.com/minecraft/mc-mods/littletweaks) or [Modrinth](https://modrinth.com/mod/littletweaks)
