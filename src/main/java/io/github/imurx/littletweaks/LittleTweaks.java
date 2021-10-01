@@ -32,11 +32,8 @@ public class LittleTweaks implements ClientModInitializer {
 	private void audioSwitcher() {
 		updateDevices();
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-			if(tickCounter < 0 || ++tickCounter < 40) return;
-			SoundEngine engine = ((SoundSystemAccessor) ((SoundManagerAccessor) client.getSoundManager()).getSoundSystem()).getSoundEngine();
-			SoundEngineAccessor accessor = (SoundEngineAccessor) engine;
-			int connect = ALC11.alcGetInteger(accessor.getDevicePointer(), EXTDisconnect.ALC_CONNECTED);
-			updateDevices();
+			if(tickCounter < 0 || ++tickCounter < LittleTweaks.getConfig().tickAudioEvery) return;
+			tickCounter = 0;
 
 			if(audioThread != null) {
 				try {
@@ -47,6 +44,11 @@ public class LittleTweaks implements ClientModInitializer {
 				audioThread = null;
 				return;
 			}
+
+			SoundEngine engine = ((SoundSystemAccessor) ((SoundManagerAccessor) client.getSoundManager()).getSoundSystem()).getSoundEngine();
+			SoundEngineAccessor accessor = (SoundEngineAccessor) engine;
+			int connect = ALC11.alcGetInteger(accessor.getDevicePointer(), EXTDisconnect.ALC_CONNECTED);
+			updateDevices();
 
 			if(connect == ALC11.ALC_FALSE) {
 				audioThread = new Thread(() -> restartSoundSystem(defaultDevice));

@@ -7,4 +7,5 @@ import me.shedaniel.autoconfig.annotation.Config;
 public class LittleConfig implements ConfigData {
     public String preferredDevice = "";
     public boolean useDefaultDevice = true;
+    public int tickAudioEvery = 40;
 }
