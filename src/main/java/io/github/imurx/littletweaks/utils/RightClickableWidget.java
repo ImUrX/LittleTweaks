@@ -1,4 +1,4 @@
-package io.github.imurx.littletweaks;
+package io.github.imurx.littletweaks.utils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;

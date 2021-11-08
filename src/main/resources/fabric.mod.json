@@ -11,7 +11,7 @@
   "contact": {
     "homepage": "https://github.com/ImUrX/littletweaks",
     "sources": "https://github.com/ImUrX/littletweaks",
-    "issues": "https://github.com/ImUrX/littletweaks"
+    "issues": "https://github.com/ImUrX/littletweaks/issues"
   },
 
   "license": "MIT",
@@ -21,6 +21,9 @@
   "entrypoints": {
     "client": [
       "io.github.imurx.littletweaks.LittleTweaks"
+    ],
+    "modmenu": [
+      "io.github.imurx.littletweaks.LittleTweaksModMenu"
     ]
   },
   "mixins": [

@@ -7,6 +7,8 @@ import io.github.imurx.littletweaks.mixin.SoundSystemAccessor;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundEngine;
@@ -15,6 +17,7 @@ import org.lwjgl.openal.*;
 
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class LittleTweaks implements ClientModInitializer {
 	private int tickCounter = -1;
 	static private Thread audioThread;
@@ -26,7 +29,6 @@ public class LittleTweaks implements ClientModInitializer {
 	public void onInitializeClient() {
 		AutoConfig.register(LittleConfig.class, Toml4jConfigSerializer::new);
 		this.audioSwitcher();
-
 	}
 
 	private void audioSwitcher() {
@@ -63,10 +65,6 @@ public class LittleTweaks implements ClientModInitializer {
 		});
 		SoundSystemCallback.STARTED_SYSTEM.register((_x) -> tickCounter = 0);
 		SoundSystemCallback.STOPPING_SYSTEM.register((_x) -> tickCounter = -1);
-	}
-
-	private void screenshotClipboard() {
-
 	}
 
 	static public void updateDevices() {

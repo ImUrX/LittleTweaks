@@ -1,8 +1,7 @@
 package io.github.imurx.littletweaks.mixin;
 
-import io.github.imurx.littletweaks.LittleConfig;
 import io.github.imurx.littletweaks.LittleTweaks;
-import io.github.imurx.littletweaks.RightClickableWidget;
+import io.github.imurx.littletweaks.utils.RightClickableWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
