@@ -5,8 +5,7 @@ import net.minecraft.client.sound.SoundEngine;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALCCapabilities;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -29,6 +28,14 @@ public class SoundEngineMixin {
         if(!capabilities.ALC_EXT_disconnect) {
             throw new IllegalStateException("Computer doesn't have the Disconnect extension");
         }
+    }
+
+    @Redirect(
+            method = "init",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(III)I", ordinal = 1)
+    )
+    public int clampForStreamingSounds(int value, int lowerBound, int upperBound) {
+        return Math.max(value, lowerBound);
     }
 
     @Inject(
